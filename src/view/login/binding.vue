@@ -26,9 +26,9 @@
         </div>
       </div>
 
-      <div class="login">确定</div>
-      <div class="protocol">
-        <div class="iconfont radio">&#xe905</div>
+      <div @click="bindPhone" class="login">确定</div>
+      <div @click="bindChangeRadio" class="protocol">
+        <div :class="flag?'current-color':''" class="iconfont radio">&#xe905</div>
         <div>已阅读并同意 <span @click.stop="bindProtocol" style="color: #ec8e2a;">《乙车网用户协议》</span></div>
       </div>
     </div>
@@ -50,10 +50,26 @@
         str: '获取',
         timer: 60,
         str1: '',
+        flag: false
       }
     },
     methods: {
-      bindProtocol(){
+      bindPhone() {
+        const info = this.info
+        this.api.post('/v1/user/bindMobile.do', {
+          phone: info.phone,
+          code: info.code,
+          invitation: info.inviteCode,
+          type: 1,
+          oauth_id: ''
+        }).then(res => {
+          console.log(res)
+        })
+      },
+      bindChangeRadio() {
+        this.flag = !this.flag
+      },
+      bindProtocol() {
         this.$router.push({
           name: 'protocol'
         })
@@ -98,6 +114,9 @@
 </script>
 
 <style scoped lang="less">
+  .current-color {
+    color: #2a7aec !important;
+  }
 
   .binding {
     position: absolute;
@@ -149,7 +168,7 @@
         font-size: 0.52rem;
         .radio {
           margin-right: .4rem;
-          color: #2a7aec;
+          color: #ccc;
         }
       }
     }

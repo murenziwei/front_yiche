@@ -1,7 +1,7 @@
 import Message from './msg.vue'
 
 const MESSAGE = {
-  duration: 2000, // 显示的时间 ms
+  duration: 1000, // 显示的时间 ms
   animateTime: 300, // 动画时间,表示这个组件切换show的动画时间
 
   install(Vue) {
@@ -12,7 +12,6 @@ const MESSAGE = {
 
     function msg(type, text, callBack) {
       let msg;
-
       let duration = MESSAGE.duration;
 
       if (typeof text === 'string') {

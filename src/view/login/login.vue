@@ -19,14 +19,22 @@
       <div class="input-item">
         <div class="input-item-title">密码</div>
         <div>
-          <input v-model="info.pwd" placeholder="请输入您的手机号码" type="password">
+          <input v-model="info.password" placeholder="请输入您的手机号码" type="password">
         </div>
       </div>
 
-      <div class="login">登陆</div>
-      <div class="protocol">
-        <div class="iconfont radio">&#xe905</div>
-        <div>已阅读并同意 <span @click.stop="bindProtocol" style="color: #ec8e2a;">《乙车网用户协议》</span></div>
+      <h1 @click="bindForget" class="forget">忘记密码</h1>
+      <div @click="bindLogin" class="login">登陆</div>
+      <div @click="bindChangeRadio" class="protocol">
+        <div
+          class="iconfont radio"
+          :class="flag?'current-color':''"
+        >&#xe905
+        </div>
+        <div>
+          已阅读并同意
+          <span @click.stop="bindProtocol" style="color: #ec8e2a;">《乙车网用户协议》</span>
+        </div>
       </div>
     </div>
 
@@ -37,7 +45,7 @@
     </div>
 
     <transition name="fade">
-      <router-view />
+      <router-view/>
     </transition>
   </div>
 </template>
@@ -53,20 +61,41 @@
       return {
         info: {
           phone: '',
-          pwd: ''
-        }
+          password: ''
+        },
+        flag: false
       }
     },
     mounted() {
 
     },
-    methods:{
-      bindProtocol(){
+    methods: {
+      bindChangeRadio() {
+        this.flag = !this.flag
+      },
+      bindForget(){
+        this.$router.push({
+          name: 'reset'
+        })
+      },
+      bindLogin() {
+        this.api.post('/v1/user/login.do', {
+          type: 1,
+          ...this.info
+        }).then(res => {
+          localStorage.setItem('token', res.data.access_token);
+          this.$message.info(res.msg);
+          this.$router.push({
+            name: 'index'
+          })
+        })
+      },
+      bindProtocol() {
         this.$router.push({
           name: 'protocol'
         })
       },
-      bindRegister(){
+      bindRegister() {
         this.$router.push({
           name: 'register'
         })
@@ -79,6 +108,17 @@
 </script>
 
 <style scoped lang="less">
+
+  .forget{
+    text-align: center;
+    padding: .8rem 0;
+    font-size: .6rem;
+    color: #2a7aec;
+  }
+  .current-color {
+    color: #2a7aec !important;
+  }
+
   .fade-enter-active, .fade-leave-active {
     transition: all .3s;
   }
@@ -143,7 +183,8 @@
       font-size: 0.52rem;
       .radio {
         margin-right: .4rem;
-        color: #2a7aec;
+
+        color: #ccc;
       }
     }
   }

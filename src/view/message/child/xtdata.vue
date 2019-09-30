@@ -1,7 +1,7 @@
 <template>
   <div class="home" :style="{height:screen.height+'px'}">
       <ul class="h-ul">
-          <li class="h-li" v-for="(item,index) of 2" :key="index">
+          <li class="h-li" >
               <div class="hl-time">
                   09232323:039434
               </div>
@@ -21,7 +21,7 @@
                   </div>
               </div>
           </li>
-          <li class="h-li" v-for="(item,index) of 2" :key="index">
+          <li class="h-li" >
               <div class="hl-time">
                   09232323:039434
               </div>

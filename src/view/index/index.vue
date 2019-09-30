@@ -4,7 +4,7 @@
       <swiper :options="swiperOption" ref="mySwiperwrap">
         <!-- slides -->
         <swiper-slide :key="index" v-for="(item,index) of imgUrls" class="item-img">
-          <img :src="item" alt="">
+          <img :src="item.img" alt="">
         </swiper-slide>
       </swiper>
 
@@ -28,14 +28,13 @@
       </div>
     </div>
 
-
     <div class="content">
       <div class="option">
-        <div class="option-item">
+        <div @click="bindPrice" class="option-item">
           <div class="iconfont icon">&#xea8b;</div>
           <div>配件咨询</div>
         </div>
-        <div class="option-item">
+        <div @click="bindSearch" class="option-item">
           <div class="iconfont icon">&#xea36;</div>
           <div>附近修理厂</div>
         </div>
@@ -62,15 +61,12 @@
 
 <script>
   import slide from './components/slide'
+
   export default {
     name: 'index',
     data() {
       return {
-        imgUrls: [
-          'http://img2.imgtn.bdimg.com/it/u=884937065,4015868281&fm=11&gp=0.jpg',
-          'http://img2.imgtn.bdimg.com/it/u=884937065,4015868281&fm=11&gp=0.jpg',
-          'http://img2.imgtn.bdimg.com/it/u=884937065,4015868281&fm=11&gp=0.jpg',
-        ],
+        imgUrls: [],
         activeNum: 0,
         swiperOption: {
           observeParents: true,
@@ -83,18 +79,46 @@
         },
       }
     },
+    mounted() {
+      this.getImg();
+
+    },
+    methods: {
+
+      getImg() {
+        this.api.get('/v1/banner.do', {
+          position: 1
+        }).then(res => {
+          this.imgUrls = res.data
+        })
+      },
+      bindPrice() {
+        this.$router.push({
+          name: 'price'
+        })
+      },
+      bindSearch() {
+        this.$router.push({
+          name: 'search'
+        })
+      }
+    },
     computed: {
       swiper() {
         return this.$refs.mySwiperwrap.swiper
       }
     },
-    components:{
+    components: {
       slide
     }
   }
 </script>
 
 <style scoped lang="less">
+  .wrap {
+    margin-bottom: 2rem;
+  }
+
   .current-dot {
     width: 0.7rem !important;
     height: 0.16rem !important;
@@ -153,7 +177,7 @@
     }
   }
 
-  .content{
+  .content {
     padding: 0 0.6rem;
     .option {
       display: flex;
@@ -166,7 +190,7 @@
           width: 1.14rem;
           height: 1.14rem;
           border: 1px dashed #3699ff;
-          background: rgba(22,208,255,.5);
+          background: rgba(22, 208, 255, .5);
           margin: 0 auto;
           line-height: 1.14rem;
           font-size: 1rem;
@@ -177,7 +201,6 @@
 
     }
   }
-
 
 
 </style>

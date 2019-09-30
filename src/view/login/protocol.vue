@@ -18,6 +18,13 @@
         html: '<a href="www.baidu.com">1312312</a>'
       }
     },
+    mounted() {
+      this.api.post('/v1/protocol/detail.do', {
+        type: 1
+      }).then(res => {
+        this.html=res.data.content
+      })
+    },
     components: {
       headNav
     }

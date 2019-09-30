@@ -1,18 +1,23 @@
 <template>
   <div class="home" :style="{height:screen.height+'px'}">
       <ul class="h-ul">
-          <li class="h-li" v-for="(item,index) of list" :key="index">
-              <div class="hl-frame">
-                  <div :class="{'hf-flex':true,'user':item.user}">
-                      <div class="h-f-left">
-                        <img :src="item.img" alt="" class="hfl-img" >
-                      </div>
-                      <div class="h-f-right">
-                        <div class="ht-info" v-html="item.val"></div>
-                      </div>
-                  </div>
-              </div>
-          </li>
+            <li :class="{'h-li':true}" v-for="(item,index) of list" :key="index">
+                <transition name="fade"
+                appear
+                enter-active-class="animated bounceOutLeft"
+                appear-active-class="animated fadeInUp">
+                    <div :class="{'hl-frame':true}">
+                        <div :class="{'hf-flex':true,'user':item.user}">
+                            <div class="h-f-left">
+                                <img :src="item.img" alt="" class="hfl-img" >
+                            </div>
+                            <div class="h-f-right">
+                                <div class="ht-info" v-html="item.val"></div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </li>
           <li style="height:50px;"></li>
       </ul>
 
@@ -23,7 +28,7 @@
             <input class="upload" @change='add_img'  type="file" accept="image/*">
           </div>
           <div class="fi-center">
-              <input type="text" class="fc-input" placeholder="请输入回复内容~" v-model="huifu" >
+              <input type="text" class="fc-input"  placeholder="请输入回复内容~" v-model="huifu" @keydown="confrimfn">
           </div>
           <span class="fi-right" @click="send_fn()">发送</span>
         </div>
@@ -36,6 +41,8 @@ export default {
     data() {
         const screen=window.screen;
         return {
+            show:true,
+            isani:true,
             screen,
             huifu:'',
             list:[
@@ -49,9 +56,8 @@ export default {
         }
     },
     methods: {
-
 		add_img(event){  
-	            let imgData=event.target.files[0];
+                let imgData=event.target.files[0];
 	            if(imgData.name){
                     this.list.push({
                         img:"",
@@ -59,6 +65,8 @@ export default {
                         val:`<img src='${window.URL.createObjectURL(imgData)}' style="width:100%;" />`,
                         user:true
                     })
+                    
+                    this.$message.success({text:'发送成功',duration:1000});
 	            }
 	    },
         send_fn(){
@@ -69,6 +77,15 @@ export default {
                     val:this.huifu,
                     user:true
                 })
+                this.huifu='';
+                
+                this.$message.success({text:'发送成功',duration:1000});
+
+            }
+        },
+        confrimfn(e){
+            if(e.keyCode===13){
+                this.send_fn();
             }
         }
     }
@@ -79,6 +96,80 @@ export default {
 ul,li{
     padding:0;
     margin:0;
+}
+
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes bounceOutLeft {
+  20% {
+    opacity: 1;
+    -webkit-transform: translate3d(20px, 0, 0);
+    transform: translate3d(20px, 0, 0);
+  }
+
+  to {
+    opacity: 0;
+    -webkit-transform: translate3d(-2000px, 0, 0);
+    transform: translate3d(-2000px, 0, 0);
+  }
+}
+
+@keyframes bounceOutLeft {
+  20% {
+    opacity: 1;
+    -webkit-transform: translate3d(20px, 0, 0);
+    transform: translate3d(20px, 0, 0);
+  }
+
+  to {
+    opacity: 0;
+    -webkit-transform: translate3d(-2000px, 0, 0);
+    transform: translate3d(-2000px, 0, 0);
+  }
+}
+
+.bounceOutLeft {
+  -webkit-animation-name: bounceOutLeft;
+  animation-name: bounceOutLeft;
+}
+
+
+@-webkit-keyframes fadeInUp {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+.fadeInUp {
+  -webkit-animation-name: fadeInUp;
+  animation-name: fadeInUp;
 }
 
 .upload{
@@ -124,6 +215,10 @@ ul,li{
     border:none;
     outline:none;
     box-shadow: none;
+    font-size:16px;
+}
+.fc-input::placeholder{
+    font-size:16px;
 }
 .fe-img{
     display:block;

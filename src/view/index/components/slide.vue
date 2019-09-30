@@ -4,10 +4,12 @@
     <div ref="wrapper" class="slide-nav">
       <ul class="slide-nav-wrap">
         <li
+          @click="bindChangeSwiper(index,item.cate_id)"
           :class="activeNum===index?'current':''"
           v-for="(item,index) of list"
+          ref="item"
         >
-          推荐个案是
+          {{item.title}}
           <div v-show="activeNum===index" class="line"></div>
         </li>
       </ul>
@@ -16,18 +18,31 @@
     <div class="container">
       <swiper :options="swiperOption" ref="mySwiperwrap">
         <!-- slides -->
-        <swiper-slide :key="index" v-for="(item,index) of list" class="swiper-wrap">
-          <ul class="list">
-            <li v-for="item of 3" class="list-item">
-              <div class="list-item-text">
-                <p>专业汽车服务品牌，立足出行服 务,构建智慧生活平台？</p>
-                <p class="people">19299观看</p>
-              </div>
-              <div class="list-item-img">
-                <img src="http://img2.imgtn.bdimg.com/it/u=884937065,4015868281&fm=11&gp=0.jpg" alt="">
-              </div>
-            </li>
-          </ul>
+        <swiper-slide :key="index" v-for="(item,index) of slides" class="swiper-wrap">
+          <div v-for="val of item">
+            <ul v-if="val.imgs.length===1" class="list">
+              <li class="list-item">
+                <div class="list-item-text">
+                  <p>{{val.title}}</p>
+                  <p class="people">{{val.total_views}}观看</p>
+                </div>
+                <div class="list-item-img">
+                  <img :src="val.imgs[0]" alt="">
+                </div>
+              </li>
+            </ul>
+
+            <ul v-if="val.imgs.length>1 && val.imgs.length<4" class="desc">
+              <li @click="bindDesc(val.article_id)" class="desc-item">
+                <p>{{val.title}}</p>
+                <ul class="desc-item-wrap">
+                  <li v-for="img of val.imgs" class="desc-item-wrap-item">
+                    <img :src="img" alt="">
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
         </swiper-slide>
       </swiper>
     </div>
@@ -41,14 +56,17 @@
     name: 'slide',
     data() {
       return {
-        list: [1, 1, 1, 1, 1, 1],
+        list: [],
+        slides: [],
         activeNum: 0,
+        currentId: '',
         swiperOption: {
           observeParents: true,
           observe: true,
           on: {
             slideChangeTransitionEnd: function () {
               this.activeNum = this.swiper.activeIndex;
+              this.scroll.scrollToElement(this.$refs.item[this.activeNum], 300)
             }.bind(this),
           },
         },
@@ -60,8 +78,49 @@
         scrollY: false,
         click: true
       });
-      console.log(this.scroll)
-      console.log(this.swiper)
+      this.getNavList()
+    },
+    methods: {
+      getNavList() {
+        this.api.get('/v1/article/category.do', {
+          position: 1
+        }).then(res => {
+          this.list = res.data;
+          this.getSlides()
+        })
+      },
+      getSlides() {
+        const arr = this.list.map(item => {
+          return new Promise((resolve, reject) => {
+            this.api.post('/v1/article.do', {
+              cate_id: item.cate_id
+            }).then(res => {
+              resolve(res.data.data)
+            })
+          })
+        })
+
+        Promise.all(arr).then(res => {
+          this.slides = res;
+          console.log(this.slides)
+        }).catch(err => {
+          //console.log(err)
+          this.$message.info(err.msg)
+        })
+      },
+      bindDesc(id) {
+        this.$router.push({
+          name: 'description',
+          query: {
+            id
+          }
+        })
+      },
+      bindChangeSwiper(index, id) {
+        this.activeNum = index;
+        this.scroll.scrollToElement(this.$refs.item[index], 300);
+        this.swiper.slideTo(index, 300, false)
+      }
     },
     computed: {
       swiper() {
@@ -105,12 +164,13 @@
     }
   }
 
-  .container{
+  .container {
     padding: 2px 0.6rem;
     box-sizing: border-box;
     //margin: 2px 0;
-    .swiper-wrap{
-      padding: 0 1px;box-sizing: border-box;
+    .swiper-wrap {
+      padding: 0 1px;
+      box-sizing: border-box;
       .list {
         .list-item {
           display: flex;
@@ -123,7 +183,7 @@
             justify-content: space-between;
             font-size: 0.64rem;
             font-weight: bold;
-            .people{
+            .people {
               color: #a2a2a2;
               font-size: 0.6rem;
               font-weight: normal;
@@ -137,6 +197,32 @@
             background: red;
             img {
               width: 100%;
+            }
+          }
+        }
+      }
+      .desc {
+        margin: 1rem 0;
+        .desc-item {
+          p {
+            font-size: 0.64rem;
+            font-weight: bold;
+            padding: .4rem 0;
+            line-height: .8rem;
+          }
+          .desc-item-wrap {
+            margin: .2rem 0;
+            display: flex;
+            justify-content: space-between;
+            .desc-item-wrap-item {
+              width: 30%;
+              height: 3.28rem;
+              border-radius: 0.16rem;
+              overflow: hidden;
+              background: red;
+              img {
+                width: 100%;
+              }
             }
           }
         }

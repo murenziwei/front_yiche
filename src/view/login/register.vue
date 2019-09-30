@@ -36,9 +36,12 @@
         </div>
       </div>
 
-      <div class="login">确认</div>
-      <div class="protocol">
-        <div class="iconfont radio">&#xe905</div>
+      <div @click="bindRegister" class="login">确认</div>
+      <div @click="bindChangeRadio" class="protocol">
+        <div
+          class="iconfont radio"
+          :class="flag?'current-color':''"
+        >&#xe905</div>
         <div>已阅读并同意 <span @click.stop="bindProtocol" style="color: #ec8e2a;">《乙车网用户协议》</span></div>
       </div>
     </div>
@@ -62,10 +65,31 @@
         str: '获取',
         timer: 60,
         str1: '',
+        flag: false
       }
     },
     methods: {
-      bindProtocol(){
+      bindChangeRadio() {
+        this.flag = !this.flag
+      },
+      bindRegister() {
+        let info = this.info;
+        this.api.post('/v1/user/register.do', {
+          phone: info.phone,
+          code: info.code,
+          password: info.oldPwd,
+          en_password: info.newPwd,
+          invitation: info.inviteCode
+        }).then(res => {
+          console.log(res)
+          localStorage.setItem('token', res.data.access_token);
+          this.$message.info(res.msg);
+          this.$router.push({
+            name: 'index'
+          })
+        })
+      },
+      bindProtocol() {
         this.$router.push({
           name: 'protocol'
         })
@@ -111,6 +135,9 @@
 
 <style scoped lang="less">
 
+  .current-color {
+    color: #2a7aec !important;
+  }
   .register {
     position: absolute;
     left: 0;
@@ -137,7 +164,7 @@
           font-size: 0.64rem;
           color: #2a7aec;
         }
-        .input-item-middle{
+        .input-item-middle {
           width: 4rem;
         }
       }
@@ -161,7 +188,7 @@
         font-size: 0.52rem;
         .radio {
           margin-right: .4rem;
-          color: #2a7aec;
+          color: #ccc;
         }
       }
     }

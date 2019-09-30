@@ -1,5 +1,6 @@
 <template>
-  <div class="home" :style="{height:screen.height+'px'}">
+  <div class="home" style="margin-bottom: 2rem" :style="{height:screen.height+'px'}">
+    <h1 class="title">消息中心</h1>
       <ul class="h-ul">
           <li class="h-li" v-for="(item,index) of 2" :key="index">
               <div class="hl-frame">
@@ -26,7 +27,7 @@
                       </div>
                       <div class="h-f-right">
                         <div class="hfr-top">
-                            <div class="ht-text">晓峰脑残</div>
+                            <div class="ht-text">系统消息</div>
                             <div class="ht-time">283928398:00 ；000 </div>
                         </div>
                         <p class="ht-info over2">沙雕小风沙雕小风沙雕小风沙雕小风沙雕小风沙雕小风沙雕小风沙雕小风沙雕小风沙雕小风沙雕小风沙雕小风</p>
@@ -50,9 +51,11 @@ export default {
 </script>
 
 <style scoped>
-ul,li{
-    padding:0;
-    margin:0;
+.title{
+  text-align: center;
+  height: 2rem;
+  line-height: 2rem;
+  font-size: 0.72rem;
 }
 .over2{
     text-overflow: -o-ellipsis-lastline;
@@ -127,7 +130,7 @@ ul,li{
     border-radius:50%;
     background-color:aliceblue;
     display:block;
-    
+
 }
 
 </style>

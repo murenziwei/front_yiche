@@ -10,11 +10,17 @@ import './config/js/rem'
 import './config/style/reset.css'
 import './config/style/iconfont.css'
 import vMessage from './components/msg/index'
-
+import './view/apply/lw-map'
+import Vant from 'vant'
+import 'vant/lib/index.css'
+import api from './config/js/api'
+Vue.use(Vant);
+// Vue.use(Vant)
 Vue.config.productionTip = false;
 Vue.use(vMessage);
 Vue.use(VueAwesomeSwiper);
 
+Vue.prototype.api = api
 new Vue({
   el: '#app',
   router,

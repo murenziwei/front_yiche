@@ -33,7 +33,7 @@
         </div>
       </div>
 
-      <div class="login">确定</div>
+      <div @click="bindRest" class="login">确定</div>
 
     </div>
   </div>
@@ -58,6 +58,22 @@
       }
     },
     methods: {
+      bindRest() {
+        const info = this.info;
+        this.api.post('/v1/user/forgetPassword.do', {
+          phone: info.phone,
+          code: info.code,
+          password: info.oldPwd,
+          en_password: info.newPwd
+        }).then(res => {
+          console.log(res)
+          localStorage.setItem('token', res.data.access_token);
+          this.$message.info(res.msg);
+          this.$router.push({
+            name: 'index'
+          })
+        })
+      },
       getCode() {
         if (this.str === '获取') {
           if (this.info.phone.length === 11) {
@@ -125,7 +141,7 @@
           font-size: 0.64rem;
           color: #2a7aec;
         }
-        .input-item-middle{
+        .input-item-middle {
           width: 4rem;
         }
       }
